@@ -1,3 +1,4 @@
+const $swimLanesContainer = $('.swim-lanes')
 const $taskForm = $('#taskForm');
 const $taskTitleInput = $('#taskTitle');
 const $taskDueDateInput = $('#taskDueDate');
@@ -56,7 +57,7 @@ function saveProjectsToLocalStorage(projectsData) {
 //create card
 function createCardEl(projectData) {
     const card = $(`
-    <div class="card" style="width: 18rem;">
+    <div class="card draggable" style="width: 18rem;">
   <div class="card-body" data-id="${projectData.id}' data-status="${projectData.status}">
     <h5 class="card-title">${projectData.title}</h5>
     <h6 class="card-subtitle mb-2 text-muted">${projectData.dueDate}</h6>
@@ -87,6 +88,10 @@ function renderCardsToLists() {
             $doneList.append(cardEl)
         }
     }
+
+    $('.draggable').draggable({
+        stack: '.swim-lanes'
+    })
 }
 
 
@@ -136,6 +141,30 @@ $(document).ready(function () {
 $taskForm.on('submit', handleTaskFormSubmit)
 
 renderCardsToLists()
+
+$('.swim-lane').droppable({
+    drop: function(event, ui) {
+        const targetListId = event.target.id.replace('-cards', '')
+        const card = ui.draggable[0]
+        const projectId = $(card).data('id')
+
+        const projects = loadProjectsFromLocalStorage()
+
+        for (const projectData of savedProjects) {
+            // find object in saved Project with same id
+            if (projectData.id === projectId) {
+                // update it's status to the target swim-lanes id
+                projectData.status = targetListId
+            }
+        }
+
+        //re-save updated projectData List
+        saveProjectsToLocalStorage(projects)
+
+        //re-render the cards
+        renderCardsToLists()
+    }
+})
 });
 
 
