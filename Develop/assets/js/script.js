@@ -25,9 +25,9 @@ function createTaskCard(taskTitle, taskDueDate, taskDescription) {
 }
 
 // Todo: create a function to render the task list and make cards draggable
-function renderTaskList() {
-
+function renderTaskList(event, ui) {
 }
+
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
@@ -41,8 +41,27 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
+    const targetListId = event.target.id.replace('-cards', '')
+    const card = ui.draggable[0]
+    const projectId = $(card).data('id')
 
+    const projects = loadProjectsFromLocalStorage()
+
+    for (const projectData of savedProjects) {
+        // find object in saved Project with same id
+        if (projectData.id === projectId) {
+            // update it's status to the target swim-lanes id
+            projectData.status = targetListId
+        }
+    }
+
+    //re-save updated projectData List
+    saveProjectsToLocalStorage(projects)
+
+    //re-render the cards
+    renderCardsToLists()
 }
+
 
 
 function loadProjectsFromLocalStorage() {
@@ -62,7 +81,7 @@ function createCardEl(projectData) {
     <h5 class="card-title">${projectData.title}</h5>
     <h6 class="card-subtitle mb-2 text-muted">${projectData.dueDate}</h6>
     <p class="card-text">${projectData.description}</p>
-    <button class="btn btn-danger">Delete</button>
+    <button class="btn btn-danger delete-card">Delete</button>
    
   </div>
 </div>
@@ -136,35 +155,37 @@ $taskDescriptionInput.val('')
 
 
 }
+
+function deleteCard(event) {
+    const cardId = $(event.target).closest('.card').data('id')
+
+    const projects = loadProjectsFromLocalStorage()
+
+    const projectsToKeep = []
+
+    for (const projectData of projects) {
+if (cardId !== projectData.id) {
+projectsToKeep.push(projectData)
+    }
+}
+
+saveProjectsToLocalStorage(projectsToKeep)
+
+renderCardsToLists()
+}
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+
+//init
 $(document).ready(function () {
 $taskForm.on('submit', handleTaskFormSubmit)
 
 renderCardsToLists()
 
 $('.swim-lane').droppable({
-    drop: function(event, ui) {
-        const targetListId = event.target.id.replace('-cards', '')
-        const card = ui.draggable[0]
-        const projectId = $(card).data('id')
-
-        const projects = loadProjectsFromLocalStorage()
-
-        for (const projectData of savedProjects) {
-            // find object in saved Project with same id
-            if (projectData.id === projectId) {
-                // update it's status to the target swim-lanes id
-                projectData.status = targetListId
-            }
-        }
-
-        //re-save updated projectData List
-        saveProjectsToLocalStorage(projects)
-
-        //re-render the cards
-        renderCardsToLists()
-    }
+    drop: handleDrop
 })
+
+$('.swim-lanes').on('click', '.delete-card', deleteCard)
 });
 
 
