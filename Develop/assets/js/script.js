@@ -72,6 +72,7 @@ function renderCardsToLists() {
         } else if (projectData.status === 'in-progress') {
             $inProgressList.append(cardEl)
         } else {
+            $(cardEl).removeClass('bg-danger bg-warning')
             $doneList.append(cardEl)
         }
     }
@@ -137,12 +138,6 @@ function handleDrop(event, ui) {
         if (projectData.id === projectId) {
             // update it's status to the target swim-lanes id
             projectData.status = targetListId;
-
-            if (targetListId === 'done') {
-                // Set the background color of the card to white
-                $(card).find('.card-body').css('background-color', 'white');
-                console.log(targetListId)
-            } 
         }
     }
 
