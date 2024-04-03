@@ -30,8 +30,6 @@ function saveProjectsToLocalStorage(projectsData) {
 function createCardEl(projectData) {
     const dueDate = dayjs(projectData.dueDate);
     const today = dayjs();
-    
-    console.log(dueDate)
 
     let colorClass = '';
     if (dueDate.isBefore(today, 'day')) {
@@ -39,15 +37,15 @@ function createCardEl(projectData) {
     } else if (dueDate.isSame(today, 'day')) {
         colorClass = 'bg-warning'; // Due today, yellow background
     } else {
-        colorClass = 'bg-white'; // Future due date or in the done lane, white background
+        colorClass = 'bg-white'; // Future due date, white background
     }
 
     const card = $(`
     <div class="card draggable ${colorClass}" data-id='${projectData.id}' data-status='${projectData.status}' style="width: 18rem;">
     <div class="card-body"> 
-    <h5 class="card-title">${projectData.title}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">${projectData.dueDate}</h6>
-    <p class="card-text">${projectData.description}</p>
+    <h5 class="card-title">Title: ${projectData.title}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">Due Date: ${projectData.dueDate}</h6>
+    <p class="card-text">Task: ${projectData.description}</p>
     <button class="btn btn-danger delete-card">Delete</button>
     
     </div>
@@ -158,7 +156,6 @@ function handleDrop(event, ui) {
 // Todo: create a function to handle deleting a task
 function deleteCard(event) {
     const cardId = $(event.target).closest('.card').data('id')
-console.log(cardId)
     const projects = loadProjectsFromLocalStorage()
 
     const projectsToKeep = []

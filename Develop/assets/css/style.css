@@ -18,3 +18,7 @@ body {
 .swim-lane {
   height: 100%;
 }
+
+button.btn.btn-danger.delete-card {
+  border-color: white;
+}
